@@ -68,11 +68,43 @@ func runNew(args newArgs) error {
 		args.yes = true // auto-approve changes, since we cannot prompt.
 	}
 
+<<<<<<< HEAD
+	cmd := &cobra.Command{
+		Use:        "new [template|url]",
+		SuggestFor: []string{"init", "create"},
+		Short:      "Create a new Pulumi project",
+		Long: "Create a new Pulumi project and stack from a template.\n" +
+			"\n" +
+			"To create a project from a specific template, pass the template name (such as `aws-typescript`\n" +
+			"or `azure-python`).  If no template name is provided, a list of suggested templates will be presented\n" +
+			"which can be selected interactively.\n" +
+			"\n" +
+			"By default, a stack created using the pulumi.com backend will use the pulumi.com secrets\n" +
+			"provider and a stack created using the local or cloud object storage backend will use the\n" +
+			"`passphrase` secrets provider.  A different secrets provider can be selected by passing the\n" +
+			"`--secrets-provider` flag.\n" +
+			"\n" +
+			"To use the `passphrase` secrets provider with the pulumi.com backend, use:\n" +
+			"* `pulumi new --secrets-provider=passphrase`\n" +
+			"\n" +
+			"To use a cloud secrets provider with any backend, use one of the following:\n" +
+			"* `pulumi new --secrets-provider=\"awskms://alias/ExampleAlias?region=us-east-1\"`\n" +
+			"* `pulumi new --secrets-provider=\"awskms://1234abcd-12ab-34cd-56ef-1234567890ab?region=us-east-1\"`\n" +
+			"* `pulumi new --secrets-provider=\"azurekeyvault://mykeyvaultname.vault.azure.net/keys/mykeyname\"`\n" +
+			"* `pulumi new --secrets-provider=\"gcpkms://projects/p/locations/l/keyRings/r/cryptoKeys/k\"`\n" +
+			"* `pulumi new --secrets-provider=\"hashivault://mykey\"`",
+		Args: cmdutil.MaximumNArgs(1),
+		Run: cmdutil.RunFunc(func(cmd *cobra.Command, args []string) error {
+			if !interactive {
+				yes = true // auto-approve changes, since we cannot prompt.
+			}
+=======
 	// Prepare options.
 	opts := display.Options{
 		Color:         cmdutil.GetGlobalColorization(),
 		IsInteractive: args.interactive,
 	}
+>>>>>>> 287374e4... Restructure for easier testability
 
 	// Validate name (if specified) before further prompts/operations.
 	if args.name != "" && workspace.ValidateProjectName(args.name) != nil {
@@ -242,8 +274,7 @@ func runNew(args newArgs) error {
 
 	// Create the stack, if needed.
 	if !args.generateOnly && s == nil {
-		if s, err = promptAndCreateStack(args.stack, args.name, true /*setCurrent*/, args.yes, opts, args.secretsProvider);
-			err != nil {
+		if s, err = promptAndCreateStack(args.stack, args.name, true /*setCurrent*/, args.yes, opts, args.secretsProvider); err != nil {
 			return err
 		}
 		// The backend will print "Created stack '<stack>'" on success.
@@ -298,27 +329,7 @@ func newNewCmd() *cobra.Command {
 		Use:        "new [template|url]",
 		SuggestFor: []string{"init", "create"},
 		Short:      "Create a new Pulumi project",
-		Long: "Create a new Pulumi project and stack from a template.\n" +
-			"\n" +
-			"To create a project from a specific template, pass the template name (such as `aws-typescript`\n" +
-			"or `azure-python`).  If no template name is provided, a list of suggested templates will be presented\n" +
-			"which can be selected interactively.\n" +
-			"\n" +
-			"By default, a stack created using the pulumi.com backend will use the pulumi.com secrets\n" +
-			"provider and a stack created using the local or cloud object storage backend will use the\n" +
-			"`passphrase` secrets provider.  A different secrets provider can be selected by passing the\n" +
-			"`--secrets-provider` flag.\n" +
-			"\n" +
-			"To use the `passphrase` secrets provider with the pulumi.com backend, use:\n" +
-			"* `pulumi new --secrets-provider=passphrase`\n" +
-			"\n" +
-			"To use a cloud secrets provider with any backend, use one of the following:\n" +
-			"* `pulumi new --secrets-provider=\"awskms://alias/ExampleAlias?region=us-east-1\"`\n" +
-			"* `pulumi new --secrets-provider=\"awskms://1234abcd-12ab-34cd-56ef-1234567890ab?region=us-east-1\"`\n" +
-			"* `pulumi new --secrets-provider=\"azurekeyvault://mykeyvaultname.vault.azure.net/keys/mykeyname\"`\n" +
-			"* `pulumi new --secrets-provider=\"gcpkms://projects/p/locations/l/keyRings/r/cryptoKeys/k\"`\n" +
-			"* `pulumi new --secrets-provider=\"hashivault://mykey\"`",
-		Args: cmdutil.MaximumNArgs(1),
+		Args:       cmdutil.MaximumNArgs(1),
 		Run: cmdutil.RunFunc(func(cmd *cobra.Command, args []string) error {
 			if len(args) > 0 {
 				o.templateNameOrURL = args[0]
@@ -386,8 +397,13 @@ func newNewCmd() *cobra.Command {
 		&o.yes, "yes", "y", false,
 		"Skip prompts and proceed with default values")
 	cmd.PersistentFlags().StringVar(
-		&o.secretsProvider, "secrets-provider", "default", "The type of the provider that should be used to encrypt and "+
+<<<<<<< HEAD
+		&secretsProvider, "secrets-provider", "default", "The type of the provider that should be used to encrypt and "+
 			"decrypt secrets (possible choices: default, passphrase, awskms, azurekeyvault, gcpkms, hashivault)")
+=======
+		&o.secretsProvider, "secrets-provider", "default", "The type of the provider that should be used to encrypt and "+
+			"decrypt secrets (possible choices: default, passphrase)")
+>>>>>>> 287374e4... Restructure for easier testability
 
 	return cmd
 }
@@ -476,12 +492,6 @@ func promptAndCreateStack(
 			return nil, err
 		}
 		return s, nil
-	}
-
-	if b.SupportsOrganizations() {
-		fmt.Print("Please enter your desired stack name.\n" +
-			"To create a stack in an organization, " +
-			"use the format <org-name>/<stack-name> (e.g. `acmecorp/dev`).\n")
 	}
 
 	for {
