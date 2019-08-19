@@ -242,8 +242,8 @@ func runNew(args newArgs) error {
 
 	// Create the stack, if needed.
 	if !args.generateOnly && s == nil {
-		if s, err = promptAndCreateStack(args.stack, args.name, true /*setCurrent*/, args.yes, opts, args.secretsProvider);
-			err != nil {
+		if s, err = promptAndCreateStack(
+			args.stack, args.name, true /*setCurrent*/, args.yes, opts, args.secretsProvider); err != nil {
 			return err
 		}
 		// The backend will print "Created stack '<stack>'" on success.
