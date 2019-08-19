@@ -15,6 +15,7 @@ package cmd
 
 import (
 	"context"
+	"os"
 	"path/filepath"
 	"testing"
 
@@ -40,6 +41,7 @@ func TestCreatingProjectWithSpecifiedName(t *testing.T) {
 		prompt:            promptForValue,
 	}
 
+	os.Chdir(e.CWD)
 	err := runNew(args)
 	assert.NoError(t, err)
 
@@ -72,6 +74,7 @@ func TestCreatingProjectWithEnteredName(t *testing.T) {
 		force:             true,
 	}
 
+	os.Chdir(e.CWD)
 	err := runNew(args)
 	assert.NoError(t, err)
 
@@ -113,6 +116,7 @@ func TestCreatingProjectWithExistingEnteredNameFails(t *testing.T) {
 		templateNameOrURL: "typescript",
 	}
 
+	os.Chdir(e.CWD)
 	err := runNew(args)
 	assert.Error(t, err)
 	assert.Contains(t, err.Error(), "project with this name already exists")
