@@ -249,7 +249,7 @@ func runNew(args newArgs) error {
 
 	// Create the stack, if needed.
 	if !args.generateOnly && s == nil {
-		if s, err = promptAndCreateStack(
+		if s, err = promptAndCreateStack(args.prompt,
 			args.stack, args.name, true /*setCurrent*/, args.yes, opts, args.secretsProvider); err != nil {
 			return err
 		}
@@ -470,7 +470,7 @@ func getStack(stack string, opts display.Options) (backend.Stack, string, string
 }
 
 // promptAndCreateStack creates and returns a new stack (prompting for the name as needed).
-func promptAndCreateStack(
+func promptAndCreateStack(prompt promptForValueFunc,
 	stack string, projectName string, setCurrent bool, yes bool, opts display.Options,
 	secretsProvider string) (backend.Stack, error) {
 
@@ -494,7 +494,7 @@ func promptAndCreateStack(
 	}
 
 	for {
-		stackName, err := promptForValue(yes, "stack name", "dev", false, workspace.ValidateStackName, opts)
+		stackName, err := prompt(yes, "stack name", "dev", false, workspace.ValidateStackName, opts)
 		if err != nil {
 			return nil, err
 		}

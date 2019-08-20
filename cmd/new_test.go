@@ -55,18 +55,11 @@ func TestCreatingProjectWithEnteredName(t *testing.T) {
 	assert.NoError(t, os.Chdir(tempdir))
 	uniqueProjectName := filepath.Base(tempdir)
 
-	promptMock := func(
-		yes bool, valueType string, defaultValue string, secret bool,
-		isValidFn func(value string) error, opts display.Options) (string, error) {
-		return uniqueProjectName, nil
-	}
-
 	var args = newArgs{
-		interactive:       false,
-		name:              uniqueProjectName,
-		templateNameOrURL: "typescript",
-		prompt:            promptMock,
+		interactive:       true,
+		prompt:            promptMock(uniqueProjectName),
 		secretsProvider:   "default",
+		templateNameOrURL: "typescript",
 	}
 
 	err := runNew(args)
@@ -76,19 +69,6 @@ func TestCreatingProjectWithEnteredName(t *testing.T) {
 
 	proj := loadProject(t, tempdir)
 	assert.Equal(t, uniqueProjectName, proj.Name.String())
-}
-
-const projectName = "test_project"
-
-func promptMock(name string) promptForValueFunc {
-	return func(yes bool, valueType string, defaultValue string, secret bool,
-		isValidFn func(value string) error, opts display.Options) (string, error) {
-		if valueType == "project name" {
-			err := isValidFn(projectName)
-			return name, err
-		}
-		return "", nil
-	}
 }
 
 func TestCreatingProjectWithExistingSpecifiedNameFails(t *testing.T) {
@@ -234,8 +214,7 @@ func TestGeneratingProjectWithInvalidEnteredNameFails(t *testing.T) {
 	var args = newArgs{
 		generateOnly:      true,
 		interactive:       true,
-		name:              "not#valid",
-		prompt:            promptMock("not%valid"),
+		prompt:            promptMock("not#valid"),
 		secretsProvider:   "default",
 		templateNameOrURL: "typescript",
 	}
@@ -243,6 +222,19 @@ func TestGeneratingProjectWithInvalidEnteredNameFails(t *testing.T) {
 	err := runNew(args)
 	assert.Error(t, err)
 	assert.Contains(t, err.Error(), "project name may only contain")
+}
+
+const projectName = "test_project"
+
+func promptMock(name string) promptForValueFunc {
+	return func(yes bool, valueType string, defaultValue string, secret bool,
+		isValidFn func(value string) error, opts display.Options) (string, error) {
+		if valueType == "project name" {
+			err := isValidFn(name)
+			return name, err
+		}
+		return defaultValue, nil
+	}
 }
 
 func loadProject(t *testing.T, dir string) *workspace.Project {
