@@ -78,7 +78,18 @@ func TestCreatingProjectWithEnteredName(t *testing.T) {
 	assert.Equal(t, uniqueProjectName, proj.Name.String())
 }
 
-var projectName = "test_project"
+const projectName = "test_project"
+
+func promptMock(name string) promptForValueFunc {
+	return func(yes bool, valueType string, defaultValue string, secret bool,
+		isValidFn func(value string) error, opts display.Options) (string, error) {
+		if valueType == "project name" {
+			err := isValidFn(projectName)
+			return name, err
+		}
+		return "", nil
+	}
+}
 
 func TestCreatingProjectWithExistingSpecifiedNameFails(t *testing.T) {
 	tempdir, _ := ioutil.TempDir("", "test-env")
@@ -109,16 +120,6 @@ func TestCreatingProjectWithExistingEnteredNameFails(t *testing.T) {
 	defer os.RemoveAll(tempdir)
 	assert.NoError(t, os.Chdir(tempdir))
 
-	promptMock := func(
-		yes bool, valueType string, defaultValue string, secret bool,
-		isValidFn func(value string) error, opts display.Options) (string, error) {
-		if valueType == "project name" {
-			err := isValidFn(projectName)
-			return projectName, err
-		}
-		return "", nil
-	}
-
 	backendInstance = &backend.MockBackend{
 		DoesProjectExistF: func(ctx context.Context, name string) (bool, error) {
 			return name == projectName, nil
@@ -127,7 +128,7 @@ func TestCreatingProjectWithExistingEnteredNameFails(t *testing.T) {
 
 	var args = newArgs{
 		interactive:       true,
-		prompt:            promptMock,
+		prompt:            promptMock(projectName),
 		secretsProvider:   "default",
 		templateNameOrURL: "typescript",
 	}
@@ -176,21 +177,11 @@ func TestGeneratingProjectWithExistingEnteredNameSucceeds(t *testing.T) {
 		},
 	}
 
-	promptMock := func(
-		yes bool, valueType string, defaultValue string, secret bool,
-		isValidFn func(value string) error, opts display.Options) (string, error) {
-		if valueType == "project name" {
-			err := isValidFn(projectName)
-			return projectName, err
-		}
-		return "", nil
-	}
-
 	// Generate-only command is not creating any stacks, so don't bother with with the name uniqueness check.
 	var args = newArgs{
 		generateOnly:      true,
 		interactive:       true,
-		prompt:            promptMock,
+		prompt:            promptMock(projectName),
 		secretsProvider:   "default",
 		templateNameOrURL: "typescript",
 	}
@@ -239,22 +230,12 @@ func TestGeneratingProjectWithInvalidEnteredNameFails(t *testing.T) {
 		},
 	}
 
-	promptMock := func(
-		yes bool, valueType string, defaultValue string, secret bool,
-		isValidFn func(value string) error, opts display.Options) (string, error) {
-		if valueType == "project name" {
-			err := isValidFn(projectName)
-			return "not%valid", err
-		}
-		return "", nil
-	}
-
 	// Generate-only command is not creating any stacks, so don't bother with with the name uniqueness check.
 	var args = newArgs{
 		generateOnly:      true,
 		interactive:       true,
 		name:              "not#valid",
-		prompt:            promptMock,
+		prompt:            promptMock("not%valid"),
 		secretsProvider:   "default",
 		templateNameOrURL: "typescript",
 	}
