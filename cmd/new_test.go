@@ -26,7 +26,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestCreatingProjectWithSpecifiedName(t *testing.T) {
+func TestCreatingProjectWithArgsSpecifiedName(t *testing.T) {
 	tempdir, _ := ioutil.TempDir("", "test-env")
 	defer os.RemoveAll(tempdir)
 	assert.NoError(t, os.Chdir(tempdir))
@@ -49,7 +49,7 @@ func TestCreatingProjectWithSpecifiedName(t *testing.T) {
 	assert.Equal(t, uniqueProjectName, proj.Name.String())
 }
 
-func TestCreatingProjectWithEnteredName(t *testing.T) {
+func TestCreatingProjectWithPromptedName(t *testing.T) {
 	tempdir, _ := ioutil.TempDir("", "test-env")
 	defer os.RemoveAll(tempdir)
 	assert.NoError(t, os.Chdir(tempdir))
@@ -71,7 +71,7 @@ func TestCreatingProjectWithEnteredName(t *testing.T) {
 	assert.Equal(t, uniqueProjectName, proj.Name.String())
 }
 
-func TestCreatingProjectWithExistingSpecifiedNameFails(t *testing.T) {
+func TestCreatingProjectWithExistingArgsSpecifiedNameFails(t *testing.T) {
 	tempdir, _ := ioutil.TempDir("", "test-env")
 	defer os.RemoveAll(tempdir)
 	assert.NoError(t, os.Chdir(tempdir))
@@ -95,7 +95,7 @@ func TestCreatingProjectWithExistingSpecifiedNameFails(t *testing.T) {
 	assert.Contains(t, err.Error(), "project with this name already exists")
 }
 
-func TestCreatingProjectWithExistingEnteredNameFails(t *testing.T) {
+func TestCreatingProjectWithExistingPromptedNameFails(t *testing.T) {
 	tempdir, _ := ioutil.TempDir("", "test-env")
 	defer os.RemoveAll(tempdir)
 	assert.NoError(t, os.Chdir(tempdir))
@@ -118,7 +118,7 @@ func TestCreatingProjectWithExistingEnteredNameFails(t *testing.T) {
 	assert.Contains(t, err.Error(), "project with this name already exists")
 }
 
-func TestGeneratingProjectWithExistingSpecifiedNameSucceeds(t *testing.T) {
+func TestGeneratingProjectWithExistingArgsSpecifiedNameSucceeds(t *testing.T) {
 	tempdir, _ := ioutil.TempDir("", "test-env")
 	defer os.RemoveAll(tempdir)
 	assert.NoError(t, os.Chdir(tempdir))
@@ -146,7 +146,7 @@ func TestGeneratingProjectWithExistingSpecifiedNameSucceeds(t *testing.T) {
 	assert.Equal(t, projectName, proj.Name.String())
 }
 
-func TestGeneratingProjectWithExistingEnteredNameSucceeds(t *testing.T) {
+func TestGeneratingProjectWithExistingPromptedNameSucceeds(t *testing.T) {
 	tempdir, _ := ioutil.TempDir("", "test-env")
 	defer os.RemoveAll(tempdir)
 	assert.NoError(t, os.Chdir(tempdir))
@@ -173,7 +173,7 @@ func TestGeneratingProjectWithExistingEnteredNameSucceeds(t *testing.T) {
 	assert.Equal(t, projectName, proj.Name.String())
 }
 
-func TestGeneratingProjectWithInvalidSpecifiedNameFails(t *testing.T) {
+func TestGeneratingProjectWithInvalidArgsSpecifiedNameFails(t *testing.T) {
 	tempdir, _ := ioutil.TempDir("", "test-env")
 	defer os.RemoveAll(tempdir)
 	assert.NoError(t, os.Chdir(tempdir))
@@ -199,7 +199,7 @@ func TestGeneratingProjectWithInvalidSpecifiedNameFails(t *testing.T) {
 	assert.Contains(t, err.Error(), "project name may only contain")
 }
 
-func TestGeneratingProjectWithInvalidEnteredNameFails(t *testing.T) {
+func TestGeneratingProjectWithInvalidPromptedNameFails(t *testing.T) {
 	tempdir, _ := ioutil.TempDir("", "test-env")
 	defer os.RemoveAll(tempdir)
 	assert.NoError(t, os.Chdir(tempdir))
